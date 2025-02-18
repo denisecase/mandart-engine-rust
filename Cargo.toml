@@ -1,0 +1,17 @@
+[package]
+name = "mandart-engine-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+image = "0.25.5" 
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[[bin]]
+name = "check"
+path = "src/check.rs"
