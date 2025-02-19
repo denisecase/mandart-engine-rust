@@ -4,7 +4,7 @@ use crate::calc::calculate_grid;
 use crate::inputs::{get_shape_inputs_from_json_string, get_color_inputs_from_json_string, ArtImageColorInputs};
 use std::fs;
 
-fn color_grid(grid: &[Vec<f64>], color_inputs: &ArtImageColorInputs) -> Vec<Vec<[f64; 3]>> {
+pub fn color_grid(grid: &[Vec<f64>], color_inputs: &ArtImageColorInputs) -> Vec<Vec<[f64; 3]>> {
     let img_width = grid[0].len();
     let img_height = grid.len();
     let mut img_data = vec![vec![[0.0_f64, 0.0_f64, 0.0_f64]; img_width]; img_height];

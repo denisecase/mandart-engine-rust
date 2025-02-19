@@ -7,14 +7,14 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 use serde_json;
 use std::collections::HashMap;
-use web_sys::console;
 
 use crate::config::load_config;
 use crate::file_io::{save_grid_to_csv, save_image_to_bmp, save_image_to_png};
 use crate::grid::{
     get_grid_from_mandart_file, get_grid_from_mandart_json_string, get_grid_from_shape_inputs,
 };
-use crate::image::{get_image_from_mandart_file, get_image_from_mandart_json_string};
+use crate::image::{get_image_from_mandart_file, get_image_from_mandart_json_string, color_grid};
+use crate::inputs::ArtImageColorInputs;
 
 /// Define standardized image representation
 pub type ImageGrid = Vec<Vec<[f64; 3]>>;
@@ -25,16 +25,36 @@ pub type ImageGrid = Vec<Vec<[f64; 3]>>;
 
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
-pub fn api_get_image_from_mandart_file_js(file_path: &str) -> Result<JsValue, JsValue> {
-    match get_image_from_mandart_file(file_path) {
-        Ok(image_grid) => {
-            // ✅ Debug Log: Print the length & sample data
-            web_sys::console::log_1(&format!("Rust: ImageData Length: {}", image_grid.len()).into());
-            if image_grid.len() > 10 {
-                console::log_1(&format!("Rust: Sample Output: {:?}", &image_grid[0..10]).into());
+pub fn api_get_image_from_mandart_file_js(file_path: &str, color_inputs: JsValue) -> Result<JsValue, JsValue> {
+    match get_grid_from_mandart_file(file_path) {
+        Ok(grid) => {
+            let width = grid.len();
+            let height = grid.get(0).map_or(0, |row| row.len());
+
+            web_sys::console::log_1(&format!("Rust: Grid Size = [{}][{}]", width, height).into());
+
+            // ✅ Deserialize color inputs from JS
+            let color_inputs: ArtImageColorInputs = serde_wasm_bindgen::from_value(color_inputs)
+                .map_err(|e| JsValue::from_str(&format!("Invalid color inputs: {}", e)))?;
+
+            // ✅ Convert iteration grid to colorized image
+            let colorized_grid = color_grid(&grid, &color_inputs);
+
+            // ✅ Flatten colorized grid into a 1D u8 array
+            let mut image_data = Vec::with_capacity(width * height * 4);
+
+            for row in colorized_grid.iter() {
+                for &pixel in row.iter() {
+                    image_data.push((pixel[0] * 255.0) as u8); // Red
+                    image_data.push((pixel[1] * 255.0) as u8); // Green
+                    image_data.push((pixel[2] * 255.0) as u8); // Blue
+                    image_data.push(255);                     // Alpha (fully opaque)
+                }
             }
 
-            serde_wasm_bindgen::to_value(&image_grid)
+            web_sys::console::log_1(&format!("Rust: Final ImageData Length = {}", image_data.len()).into());
+
+            serde_wasm_bindgen::to_value(&image_data)
                 .map_err(|e| JsValue::from_str(&e.to_string()))
         }
         Err(e) => Err(JsValue::from_str(&e)),
