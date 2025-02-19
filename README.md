@@ -72,3 +72,10 @@ ImageGrid Representation of the Image
 | WASM | Convert `[[f32; 3]]` to an `ImageData` buffer |
 | Python | Convert to NumPy `np.array([...], dtype=np.float64)` |
 
+## Clean and Build WASM
+
+```zsh
+cargo clean
+cargo build --release --features wasm
+wasm-pack build --target web --out-dir public/pkg
+```

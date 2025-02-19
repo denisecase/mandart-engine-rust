@@ -1,4 +1,7 @@
 //! `api.rs` - API functions for MandArt Engine
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
+
 
 use crate::config::load_config;
 use crate::file_io::{save_grid_to_csv, save_image_to_bmp, save_image_to_png};
@@ -10,6 +13,22 @@ use serde_json;
 use std::collections::HashMap;
 
 pub type ImageGrid = Vec<Vec<[f64; 3]>>; // Standardized Image Representation
+
+/// WASM FUNCTIONS ..............................
+/// These functions are used to expose the API to JavaScript.
+#[cfg(feature = "wasm")]
+#[wasm_bindgen]
+pub fn api_get_image_from_mandart_file_js(file_path: &str) -> Result<JsValue, JsValue> {
+    match get_image_from_mandart_file(file_path) {
+        Ok(image_grid) => {
+            serde_wasm_bindgen::to_value(&image_grid)
+                .map_err(|e| JsValue::from_str(&e.to_string()))
+        }
+        Err(e) => Err(JsValue::from_str(&e)),
+    }
+}
+
+
 
 /// GET GRID ..............................
 
