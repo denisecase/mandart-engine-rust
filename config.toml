@@ -1,0 +1,13 @@
+# config.toml
+
+# Folder containing .mandart files
+input_folder = "input"
+
+# Folder containing reference outputs from MandArt
+check_folder = "input_swift"
+
+# Folder where engine output PNGs and CSVs will be saved
+output_folder = "output"
+
+# Whether to save the grid as CSV (true/false)
+save_grid = true

@@ -1,10 +1,10 @@
 // calc.rs - calculate the grid, or recolor, or whatever
 
-use crate::inputs::{ArtImageShapeInputs, ArtImageColorInputs};
+use crate::inputs::ArtImageShapeInputs;
 
 
 /// Calculates the Mandelbrot grid and returns the result as a 2D vector of doubles.
-pub fn calculate_grid(shape_inputs: &ArtImageShapeInputs, color_inputs: &ArtImageColorInputs) -> Vec<Vec<f64>> {
+pub fn calculate_grid(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec<f64>> {
     let image_width = shape_inputs.image_width as usize;
     let image_height = shape_inputs.image_height as usize;
 

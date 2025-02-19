@@ -1,5 +1,3 @@
-// inputs.rs - process input files to get ready for processing
-
 use serde::Deserialize;
 use serde_json::Value;
 use std::fs;
@@ -20,29 +18,33 @@ pub struct ArtImageShapeInputs {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Hue {
-    pub r: f64,
-    pub g: f64,
-    pub b: f64,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct ArtImageColorInputs {
     pub n_blocks: u32,
     pub n_colors: usize,
     pub spacing_color_far: f64,
     pub spacing_color_near: f64,
     pub y_y_input: f64,
-    pub mand_color: Hue,
-    pub hues_list: Vec<[f64; 4]>, // [num, r, g, b]
-    pub colors: Vec<[f64; 3]>,    // [r, g, b] only
+    pub mand_color: [f64; 3],  // Match Swift's `[Double]`
+    pub colors: Vec<[f64; 3]>, // [r, g, b] only
 }
 
 
-/// Reads a `.mandart` file and extracts shape-related parameters.
 pub fn get_shape_inputs(input_file: &str) -> io::Result<ArtImageShapeInputs> {
+    println!("get_shape_inputs (from file): {}", input_file);
     let file_contents = fs::read_to_string(input_file)?;
-    let parsed: Value = serde_json::from_str(&file_contents)?;
+    get_shape_inputs_from_json_string(&file_contents) // Use the new JSON parser
+}
+
+
+pub fn get_color_inputs(input_file: &str) -> io::Result<ArtImageColorInputs> {
+    println!("get_color_inputs (from file): {}", input_file);
+    let file_contents = fs::read_to_string(input_file)?;
+    get_color_inputs_from_json_string(&file_contents) // Use the new JSON parser
+}
+
+
+pub fn get_shape_inputs_from_json_string(json_str: &str) -> io::Result<ArtImageShapeInputs> {
+    let parsed: Value = serde_json::from_str(json_str)?;
 
     let shape_inputs = ArtImageShapeInputs {
         image_height: parsed["imageHeight"].as_u64().unwrap_or(500) as u32,
@@ -60,36 +62,30 @@ pub fn get_shape_inputs(input_file: &str) -> io::Result<ArtImageShapeInputs> {
     Ok(shape_inputs)
 }
 
-/// Reads a `.mandart` file and extracts color-related parameters.
-pub fn get_color_inputs(input_file: &str) -> io::Result<ArtImageColorInputs> {
-    let file_contents = fs::read_to_string(input_file)?;
-    let parsed: Value = serde_json::from_str(&file_contents)?;
+//
+// NEW: Reads color inputs from a JSON string.
+//
+pub fn get_color_inputs_from_json_string(json_str: &str) -> io::Result<ArtImageColorInputs> {
+    let parsed: Value = serde_json::from_str(json_str)?;
 
-    let hues = parsed["hues"].as_array().unwrap_or(&vec![]).iter()
-        .filter_map(|hue| {
-            Some([
-                hue["num"].as_f64()?,
-                hue["r"].as_f64()?,
-                hue["g"].as_f64()?,
-                hue["b"].as_f64()?,
-            ])
-        })
-        .collect::<Vec<[f64; 4]>>();
-
-    let colors = hues.iter().map(|h| [h[1], h[2], h[3]]).collect();
+    let colors = parsed["hues"]
+        .as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .filter_map(|hue| Some([hue["r"].as_f64()?, hue["g"].as_f64()?, hue["b"].as_f64()?]))
+        .collect::<Vec<[f64; 3]>>();
 
     let color_inputs = ArtImageColorInputs {
         n_blocks: parsed["nBlocks"].as_u64().unwrap_or(10) as u32,
-        n_colors: hues.len(),
+        n_colors: colors.len(),
         spacing_color_far: parsed["spacingColorFar"].as_f64().unwrap_or(1.0),
         spacing_color_near: parsed["spacingColorNear"].as_f64().unwrap_or(1.0),
         y_y_input: parsed["yY"].as_f64().unwrap_or(0.5),
-        mand_color: Hue {
-            r: parsed["mandColor"]["r"].as_f64().unwrap_or(0.0),
-            g: parsed["mandColor"]["g"].as_f64().unwrap_or(0.0),
-            b: parsed["mandColor"]["b"].as_f64().unwrap_or(0.0),
-        },
-        hues_list: hues,
+        mand_color: [
+            parsed["mandColor"]["red"].as_f64().unwrap_or(0.0),
+            parsed["mandColor"]["green"].as_f64().unwrap_or(0.0),
+            parsed["mandColor"]["blue"].as_f64().unwrap_or(0.0),
+        ],
         colors,
     };
 

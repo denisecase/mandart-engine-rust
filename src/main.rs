@@ -1,69 +1,77 @@
-// main.rs
+//! `main.rs` - CLI Test Application for MandArt Engine
 
-mod calc;
-mod inputs;
-mod outputs;
-
+use mandart_engine_rust::config::load_config;
+use mandart_engine_rust::file_io::{read_mandart_file, save_image_to_bmp, save_image_to_png};
+use mandart_engine_rust::image::get_image_from_mandart_file;
+use mandart_engine_rust::utils::list_files_in_dir;
+use std::env;
 use std::fs;
-use std::io::{self};
-use std::path::PathBuf;
+use std::path::Path;
 
-use calc::calculate_grid;
-use inputs::{get_color_inputs, get_shape_inputs};
-use outputs::{color_grid, write_grid_to_csv};
 
-/// Generates a CSV filename based on the `.mandart` filename.
-fn get_csv_name_from_mandart_name(output_folder: &str, mandart_name: &str) -> String {
-    format!("{}/{}.csv", output_folder, mandart_name)
+fn main() {
+    process_mandart_files();
 }
 
-/// Generates an image filename based on the `.mandart` filename.
-fn get_image_name_from_mandart_name(output_folder: &str, mandart_name: &str, ext: &str) -> String {
-    format!("{}/{}.{}", output_folder, mandart_name, ext)
-}
+/// Process all `.mandart` files and generate images.
+pub fn process_mandart_files() {
+    let args: Vec<String> = env::args().collect();
+    let config_file = args.get(1).map(String::as_str);
+    let config = load_config(config_file);
 
-fn main() -> io::Result<()> {
-    let input_folder = "input";
-    let output_folder = "output";
+    // Fix: Store the default values in variables first
+    let default_input_folder = "input".to_string();
+    let default_output_folder = "output".to_string();
 
-    // Ensure output folder exists
-    if !std::path::Path::new(output_folder).exists() {
-        fs::create_dir(output_folder)?;
+    // Use variables instead of temporary values
+    let input_folder = config.get("input_folder").unwrap_or(&default_input_folder);
+    let output_folder = config.get("output_folder").unwrap_or(&default_output_folder);
+
+    println!("\u{1F4C2} Processing MandArt files from `{}`...", input_folder);
+
+    let mut mandart_files = list_files_in_dir(input_folder, ".mandart");
+    if mandart_files.is_empty() {
+        println!("⚠️ No .mandart files found in `{}`.", input_folder);
+        return;
     }
 
-    let mut mandart_files: Vec<PathBuf> = fs::read_dir(input_folder)?
-        .filter_map(|entry| entry.ok().map(|e| e.path()))
-        .filter(|path| path.extension().map_or(false, |ext| ext == "mandart"))
-        .collect();
+    mandart_files.sort();
+    fs::create_dir_all(output_folder).expect("Failed to create output directory.");
 
-    mandart_files.sort(); // Process in order
+    for file in &mandart_files {
+        println!("📄 Processing file: {}", file);
+        let file_path = Path::new(file);
+        let file_stem = file_path.file_stem()
+            .map(|f| f.to_string_lossy().to_string())
+            .unwrap_or_else(|| "unknown".to_string());
 
-    for path in &mandart_files {
-        let file_name = path.file_stem().unwrap().to_str().unwrap();
-        let mandart_file = path.to_str().unwrap();
-        let output_csv = get_csv_name_from_mandart_name(output_folder, file_name);
-        let output_bmp = get_image_name_from_mandart_name(output_folder, file_name, "bmp");
+        println!("File stem: `{}`", file_stem);
 
-        println!("📂 Processing `{}`...", file_name);
-
-        // Read input parameters from .mandart
-        let shape_inputs = get_shape_inputs(&mandart_file)?;
-        let color_inputs = get_color_inputs(&mandart_file)?;
-
-        println!("✅ Shape Inputs: {:?}", shape_inputs);
-        println!("🎨 Color Inputs: {:?}", color_inputs);
-
-        // Generate the grid
-        let grid = calculate_grid(&shape_inputs, &color_inputs);
-
-        // Save as CSV
-        write_grid_to_csv(&grid, &output_csv)?;
-        println!("✅ CSV saved to {}", output_csv);
-
-        // Save as BMP (image)
-        color_grid(&grid, &shape_inputs, &color_inputs, &output_bmp)?;
-        println!("🖼️ BMP image saved to {}", output_bmp);
+        match read_mandart_file(file) {
+            Ok(_) => {
+                match get_image_from_mandart_file(file) {
+                    Ok(image_grid) => { 
+                        let bmp_output_path = format!("{}/{}.bmp", output_folder, file_stem);
+                        let png_output_path = format!("{}/{}.png", output_folder, file_stem);
+        
+                        match save_image_to_bmp(&image_grid, &bmp_output_path) {
+                            Ok(_) => println!("BMP saved: {}", bmp_output_path),
+                            Err(e) => println!("Failed to save BMP {}: {}", bmp_output_path, e),
+                        }
+        
+                        match save_image_to_png(&image_grid, &png_output_path) {  
+                            Ok(_) => println!("PNG saved: {}", png_output_path),
+                            Err(e) => println!("Failed to save PNG {}: {}", png_output_path, e),
+                        }
+                    }
+                    Err(e) => println!("Error processing `{}`: {}", file, e),
+                }
+            }
+            Err(e) => {
+                println!("Failed to read `{}`: {}", file, e);
+            }
+        }
     }
 
-    Ok(())
+    println!("🎉 Done! Images saved in `{}`.", output_folder);
 }

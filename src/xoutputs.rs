@@ -20,8 +20,6 @@ pub fn write_grid_to_csv(grid: &Vec<Vec<f64>>, output_file: &str) -> io::Result<
     Ok(())
 }
 
-
-
 /// Colors the Mandelbrot grid using iteration values and saves as BMP.
 pub fn color_grid(
     f_iter: &Vec<Vec<f64>>, 
@@ -81,6 +79,6 @@ pub fn color_grid(
     }
 
     img.save(output_file).expect("Failed to save BMP file");
-    println!("✅ BMP saved to {}", output_file);
+    println!("BMP saved to {}", output_file);
     Ok(())
 }

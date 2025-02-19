@@ -42,13 +42,13 @@ fn compare_csv_files(file1: &str, file2: &str) -> io::Result<()> {
     let first_five_2 = content2.first().map_or(vec![], |row| row.iter().take(5).cloned().collect());
 
     if row_count1 == row_count2 && col_count1 == col_count2 && first_five_1 == first_five_2 {
-        println!("✅ Files match: {} == {}", file1, file2);
+        println!("Files match: {} == {}", file1, file2);
     } else {
-        println!("❌ Files DO NOT match: {} != {}", file1, file2);
+        println!("Files DO NOT match: {} != {}", file1, file2);
         println!("---------------------------------------------");
-        println!("📊 Image WIDTH:  Row Count:    {} vs {} in Swift", row_count1, row_count2);
-        println!("📏 Image HEIGHT: Column Count: {} vs {} in Swift", col_count1, col_count2);
-        println!("🔍 First 5 Cells:");
+        println!("Image WIDTH:  Row Count:    {} vs {} in Swift", row_count1, row_count2);
+        println!("Image HEIGHT: Column Count: {} vs {} in Swift", col_count1, col_count2);
+        println!("First 5 Cells:");
         println!("  {}: {:?}", file1, first_five_1);
         println!("  {}: {:?}", file2, first_five_2);
         println!("---------------------------------------------");

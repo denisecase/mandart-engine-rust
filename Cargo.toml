@@ -6,12 +6,19 @@ edition = "2021"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+toml = "0.8.20"
 image = "0.25.5" 
+wasm-bindgen = { version = "0.2", optional = true }
+libc = { version = "0.2", optional = true }
+base64 = "0.22.1"
+tempfile = "3.8"
 
-[[bin]]
-name = "main"
-path = "src/main.rs"
+[lib]
+crate-type = ["cdylib", "rlib"]  # Supports both Rust lib & FFI
 
-[[bin]]
-name = "check"
-path = "src/check.rs"
+[features]
+wasm = ["wasm-bindgen"]
+ffi = ["libc"]
+
+[profile.release]
+lto = true  # Optimize for smaller binary size
