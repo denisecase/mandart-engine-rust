@@ -33,16 +33,20 @@ pub fn api_get_image_from_mandart_file_js(file_path: &str, color_inputs: JsValue
 
             web_sys::console::log_1(&format!("Rust: Grid Size = [{}][{}]", width, height).into());
 
-            // ✅ Deserialize color inputs from JS
             let color_inputs: ArtImageColorInputs = serde_wasm_bindgen::from_value(color_inputs)
                 .map_err(|e| JsValue::from_str(&format!("Invalid color inputs: {}", e)))?;
 
-            // ✅ Convert iteration grid to colorized image
+            // ✅ Convert grid to colored image
             let colorized_grid = color_grid(&grid, &color_inputs);
+            web_sys::console::log_1(&format!("Rust: Colorized Grid Size = [{}][{}]", colorized_grid.len(), colorized_grid[0].len()).into());
 
-            // ✅ Flatten colorized grid into a 1D u8 array
+            // ✅ Debug: Log first 10 values
+            if colorized_grid.len() > 0 {
+                web_sys::console::log_1(&format!("Rust: First Row Sample: {:?}", &colorized_grid[0][..10]).into());
+            }
+
+            // ✅ Flatten grid
             let mut image_data = Vec::with_capacity(width * height * 4);
-
             for row in colorized_grid.iter() {
                 for &pixel in row.iter() {
                     image_data.push((pixel[0] * 255.0) as u8); // Red
@@ -60,6 +64,7 @@ pub fn api_get_image_from_mandart_file_js(file_path: &str, color_inputs: JsValue
         Err(e) => Err(JsValue::from_str(&e)),
     }
 }
+
 
 
 #[cfg(feature = "wasm")]
