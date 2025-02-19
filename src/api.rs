@@ -7,6 +7,7 @@ extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 use serde_json;
 use std::collections::HashMap;
+use web_sys::console;
 
 use crate::config::load_config;
 use crate::file_io::{save_grid_to_csv, save_image_to_bmp, save_image_to_png};
@@ -26,11 +27,20 @@ pub type ImageGrid = Vec<Vec<[f64; 3]>>;
 #[wasm_bindgen]
 pub fn api_get_image_from_mandart_file_js(file_path: &str) -> Result<JsValue, JsValue> {
     match get_image_from_mandart_file(file_path) {
-        Ok(image_grid) => serde_wasm_bindgen::to_value(&image_grid)
-            .map_err(|e| JsValue::from_str(&e.to_string())),
+        Ok(image_grid) => {
+            // ✅ Debug Log: Print the length & sample data
+            web_sys::console::log_1(&format!("Rust: ImageData Length: {}", image_grid.len()).into());
+            if image_grid.len() > 10 {
+                console::log_1(&format!("Rust: Sample Output: {:?}", &image_grid[0..10]).into());
+            }
+
+            serde_wasm_bindgen::to_value(&image_grid)
+                .map_err(|e| JsValue::from_str(&e.to_string()))
+        }
         Err(e) => Err(JsValue::from_str(&e)),
     }
 }
+
 
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
