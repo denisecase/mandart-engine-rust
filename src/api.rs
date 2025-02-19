@@ -1,4 +1,8 @@
 //! `api.rs` - API functions for MandArt Engine
+
+#[cfg(feature = "wasm")]
+extern crate wasm_bindgen;
+
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
@@ -16,24 +20,24 @@ pub type ImageGrid = Vec<Vec<[f64; 3]>>; // Standardized Image Representation
 
 /// WASM FUNCTIONS ..............................
 /// These functions are used to expose the API to JavaScript.
+///
 #[cfg(feature = "wasm")]
 #[wasm_bindgen]
 pub fn api_get_image_from_mandart_file_js(file_path: &str) -> Result<JsValue, JsValue> {
     match get_image_from_mandart_file(file_path) {
         Ok(image_grid) => {
-            serde_wasm_bindgen::to_value(&image_grid)
-                .map_err(|e| JsValue::from_str(&e.to_string()))
+            serde_wasm_bindgen::to_value(&image_grid).map_err(|e| JsValue::from_str(&e.to_string()))
         }
         Err(e) => Err(JsValue::from_str(&e)),
     }
 }
 
-
-
 /// GET GRID ..............................
 
 /// Computes a grid from shape inputs JSON string.
-pub fn api_get_grid_from_shape_inputs_json_string(shape_json: &str) -> Result<Vec<Vec<f64>>, String> {
+pub fn api_get_grid_from_shape_inputs_json_string(
+    shape_json: &str,
+) -> Result<Vec<Vec<f64>>, String> {
     get_grid_from_shape_inputs(shape_json)
 }
 
@@ -46,7 +50,6 @@ pub fn api_get_grid_from_mandart_json_string(mandart_json: &str) -> Result<Vec<V
 pub fn api_get_grid_from_mandart_file(file_path: &str) -> Result<Vec<Vec<f64>>, String> {
     get_grid_from_mandart_file(file_path)
 }
-
 
 /// GET IMAGE ..............................
 

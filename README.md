@@ -77,5 +77,5 @@ ImageGrid Representation of the Image
 ```zsh
 cargo clean
 cargo build --release --features wasm
-wasm-pack build --target web --out-dir public/pkg
+wasm-pack build --target web --out-dir public/pkg --features wasm
 ```
