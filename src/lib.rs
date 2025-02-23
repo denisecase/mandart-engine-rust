@@ -1,5 +1,4 @@
 //! `lib.rs` - Exposes Public API for Rust, WASM, and Swift
-
 pub mod api;
 pub mod calc;
 pub mod config;

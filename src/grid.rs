@@ -26,3 +26,21 @@ pub fn get_grid_from_mandart_file(file_path: &str) -> Result<Vec<Vec<f64>>, Stri
         .map_err(|e| format!("Failed to read file {}: {}", file_path, e))?;
     get_grid_from_mandart_json_string(&file_content) 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::get_grid_from_mandart_json_string;
+
+    #[test]
+    fn test_mandart_json_parsing() {
+        let test_json = r#"{"shape": "mandelbrot", "width": 500, "height": 500}"#;
+        match get_grid_from_mandart_json_string(test_json) {
+            Ok(grid) => {
+                assert!(!grid.is_empty(), "Grid should not be empty");
+                println!("✅ Grid successfully generated! Size: {}x{}", grid.len(), grid[0].len());
+            }
+            Err(e) => panic!("❌ Error: {}", e),
+        }
+    }
+}
+
