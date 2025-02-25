@@ -106,30 +106,187 @@ cp public/pkg/*.wasm public/pkg/mandart-engine-rust.wasm.txt
 
 Note: these folders are temporary and used for testing. They might not be distributed, although a catalog of existing .mandart files and their .png thumbnails are valuable in the host web app or MandArt SwiftUI app, so maybe?
 
-## Types
+# Finalized Interop for Mandelbrot Grid Calculations  
 
-Grid Data (Calculated from Mandelbrot)
-- Type: Vec<Vec<f64>>
-- Why? Each pixel in the grid holds a floating-point iteration count.
-- Used in: calculate_grid(), save_grid_to_csv(), get_grid_from_mandart_json_string(), etc.
+This document defines a cross-language interop structure for Swift, Rust, and JavaScript to compute and color Mandelbrot sets efficiently.  
 
-Color Data (RGB Values)
-- Type: Vec<[f64; 3]>
-- Why? Each color is an RGB triplet (matching Swift's [Double] arrays).
-- Used in: color_grid(), ArtImageColorInputs, etc.
+## Basic Number Types  
 
-ImageGrid Representation of the Image
-- Type: Vec<Vec<[f64; 3]>>
-- Why? Preserves precision and keeps it easy for clients
-- Used in: get_image...functions
+### Integer Types  
+- Swift: Int32  
+- Rust: i32  
+- JavaScript: number (64-bit float, but used as an integer)  
 
-### How Clients Can Handle It  
+### Floating-Point Types  
+- Swift: Double (8 bytes, 64-bit)  
+- Rust: f64  
+- JavaScript: Float64Array  
 
-| Platform | Best Conversion |
-|-------------|----------------------|
-| Swift | Convert `[[Double]]` to `UIImage` or `CGImage` |
-| WASM | Convert `[[f32; 3]]` to an `ImageData` buffer |
-| Python | Convert to NumPy `np.array([...], dtype=np.float64)` |
+## Calc Grid Input Structure  
+
+### Swift  
+
+```
+struct ArtImageShapeInputs {  
+  let imageHeight: Int  
+  let imageWidth: Int  
+  let iterationsMax: Double  
+  let scale: Double  
+  let xCenter: Double  
+  let yCenter: Double  
+  let theta: Double  
+  let dFIterMin: Double  
+  let rSqLimit: Double  
+  let mandPowerReal: Int  
+}  
+```
+
+
+### Rust  
+
+```
+struct ArtImageShapeInputs {  
+    image_height: i32,  
+    image_width: i32,  
+    iterations_max: f64,  
+    scale: f64,  
+    x_center: f64,  
+    y_center: f64,  
+    theta: f64,  
+    d_f_iter_min: f64,  
+    r_sq_limit: f64,  
+    mand_power_real: i32,  
+}  
+```
+
+### JavaScript  
+
+```
+const artImageShapeInputs = {  
+    imageHeight: 800,  
+    imageWidth: 600,  
+    iterationsMax: 1000.0,  
+    scale: 1.5,  
+    xCenter: -0.5,  
+    yCenter: 0.0,  
+    theta: 0.0,  
+    dFIterMin: 0.1,  
+    rSqLimit: 4.0,  
+    mandPowerReal: 2  
+};  
+
+```
+
+## Color Grid Input Structure  
+
+### Swift  
+
+```
+struct ArtImageColorInputs {  
+  let nBlocks: Int  
+  let nColors: Int  
+  let spacingColorFar: Double  
+  let spacingColorNear: Double  
+  let yY_input: Double  
+  let mandColor: Double  
+}  
+```
+
+### Rust  
+
+```
+struct ArtImageColorInputs {  
+    n_blocks: i32,  
+    n_colors: i32,  
+    spacing_color_far: f64,  
+    spacing_color_near: f64,  
+    y_y_input: f64,  
+    mand_color: f64  
+}  
+
+```
+
+### JavaScript  
+```
+const artImageColorInputs = {  
+    nBlocks: 10,  
+    nColors: 256,  
+    spacingColorFar: 1.0,  
+    spacingColorNear: 0.1,  
+    yY_input: 0.5,  
+    mandColor: 240.0  
+};  
+```
+
+## Hues (List of Ordered Colors)  
+
+### Swift  
+```
+final class Hue: Identifiable, Codable, Equatable {  
+  var id: UUID  
+  var num: Int  
+  var r: Double  
+  var g: Double  
+  var b: Double  
+}  
+```
+
+### Rust  
+```
+struct Hue {  
+    id: uuid::Uuid,  
+    num: i32,  
+    r: f64,  
+    g: f64,  
+    b: f64  
+}  
+```
+
+### JavaScript  
+
+```
+class Hue {  
+    constructor(id, num, r, g, b) {  
+        this.id = id;  
+        this.num = num;  
+        this.r = r;  
+        this.g = g;  
+        this.b = b;  
+    }  
+}
+```  
+
+## I/O for Calc Grid & Color Grid  
+
+### Calc Grid Input (Basic Structure)  
+- Swift: shapeInputs: ArtImageShapeInputs  
+- Rust: ArtImageShapeInputs struct  
+- JavaScript: Object { imageHeight, imageWidth, iterationsMax, scale, xCenter, yCenter, theta, dFIterMin, rSqLimit }  
+
+### Calc Grid Output (Calculated from Mandelbrot)  
+- Swift: [[Double]] (2D array of iteration values)  
+- Rust: Vec<Vec<f64>>  
+- JavaScript: Float64Array[]  
+- Holds a floating-point iteration count.  
+
+### Color Grid Input  
+- Swift: [[Double]] (2D array of iteration values)  
+- Rust: Vec<Vec<f64>>  
+- JavaScript: Float64Array[]  
+- Holds a floating-point iteration count.  
+
+### Color Grid Output (2D col, row + RGB Hex)  
+- Swift: [[String]] ("#RRGGBB")  
+- Rust: Vec<Vec<String>> ("#RRGGBB")  
+- JavaScript: Array<Array<string>> ("#RRGGBB")  
+
+## How Clients Can Handle It  
+
+| Platform  | Best Conversion |  
+|-----------|----------------|  
+| Swift     | Convert [[Double]] to UIImage or CGImage |  
+| WASM      | Convert [[f64; 3]] to an ImageData buffer |  
+| Python    | Convert to NumPy np.array([...], dtype=np.float64) |  
 
 ## Clean and Build WASM
 
@@ -138,3 +295,5 @@ cargo clean
 cargo build --release --features wasm
 wasm-pack build --target web --out-dir public/pkg --features wasm
 ```
+
+

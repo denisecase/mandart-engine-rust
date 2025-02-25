@@ -51,7 +51,7 @@ pub fn get_image_from_mandart_json_string(
     info!("✅ Extracted Color Inputs: {:?}", color_inputs);
 
     let grid = calculate_grid(&shape_inputs);
-    let image_grid = color_grid(&grid, &color_inputs);
+    let image_grid: Vec<Vec<[f64; 3]>> = color_grid(&grid, &color_inputs);
 
     info!("🎨 Coloring complete. Returning Image Grid.");
     Ok(image_grid)

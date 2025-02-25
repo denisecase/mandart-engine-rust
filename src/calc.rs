@@ -5,6 +5,11 @@ use crate::inputs::ArtImageShapeInputs;
 
 /// Calculates the Mandelbrot grid and returns the result as a 2D vector of doubles.
 pub fn calculate_grid(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec<f64>> {
+
+
+    println!("Calculating grid...");
+
+
     let image_width = shape_inputs.image_width as usize;
     let image_height = shape_inputs.image_height as usize;
 
