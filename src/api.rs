@@ -1,6 +1,5 @@
 //! `api.rs` - API functions for MandArt Engine
 
-use wasm_bindgen::prelude::*;
 use serde_json;
 use std::collections::HashMap;
 use crate::config::load_config;
@@ -71,28 +70,3 @@ pub fn api_color_grid_js(grid_csv: &str, hues_json: &str) -> Result<JsValue, JsV
     Ok(JsValue::from_str(&csv_output))
 }
 
-/// ========================
-/// GRID COMPUTATION FUNCTIONS
-/// ========================
-
-pub use crate::grid::get_grid_from_mandart_json_string as api_get_grid_from_mandart_json_string;
-
-/// ========================
-/// IMAGE COMPUTATION FUNCTIONS
-/// ========================
-
-pub fn api_compute_image_from_mandart_file(file_path: &str) -> Result<ImageGrid, String> {
-    get_image_from_mandart_file(file_path)
-}
-
-pub fn api_compute_image_from_mandart_json(json_str: &str) -> Result<ImageGrid, String> {
-    get_image_from_mandart_json_string(json_str)
-}
-
-/// ========================
-/// CONFIGURATION LOADING
-/// ========================
-
-pub fn api_load_config(config_path: Option<&str>) -> HashMap<String, String> {
-    load_config(config_path)
-}
