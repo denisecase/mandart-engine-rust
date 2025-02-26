@@ -1,0 +1,37 @@
+[package]
+name = "mandart-wasm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Internal dependency (ensure correct path)
+mandart-core = { path = "../mandart-core" }
+
+# Logging
+log = "0.4"
+console_log = { version = "1.0", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde-wasm-bindgen = "0.6"
+
+# WASM bindings
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+
+# JS & Web API bindings
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+
+# Image processing
+image = "0.25.5"  # ✅ Add this for PNG generation
+
+# Base64 encoding/decoding
+base64 = "0.22.1"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+wasm = ["console_log", "console_error_panic_hook"]

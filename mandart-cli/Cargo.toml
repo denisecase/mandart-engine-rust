@@ -1,0 +1,13 @@
+[package]
+name = "mandart-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mandart-core = { path = "../mandart-core" }  # ✅ Uses core's CSV handling
+env_logger = "0.11.6"
+log = "0.4.26"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"

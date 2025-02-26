@@ -1,5 +1,3 @@
-# config.toml
-
 # Folder containing .mandart files
 input_folder = "input"
 
@@ -11,3 +9,7 @@ output_folder = "output"
 
 # Whether to save the grid as CSV (true/false)
 save_grid = true
+
+# Paths for default files (used for preloading)
+default_csv_path = "assets/MandArt_Catalog/Default.csv"
+default_mandart_path = "assets/MandArt_Catalog/Default.mandart"

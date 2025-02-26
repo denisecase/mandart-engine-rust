@@ -1,0 +1,36 @@
+{
+    "name": "mandart-wasm",
+    "version": "0.1.0",
+    "description": "WebAssembly (WASM) bindings for MandArt Engine.",
+    "author": "Denise Case",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/denisecase/mandart-engine-rust.git"
+    },
+    "scripts": {
+      "build": "wasm-pack build --target web",
+      "test": "wasm-pack test --node",
+      "clean": "rm -rf pkg"
+    },
+    "dependencies": {
+      "wasm-bindgen": "^0.2",
+      "serde-wasm-bindgen": "^0.6",
+      "base64-js": "^1.5.1"
+    },
+    "devDependencies": {
+      "wasm-pack": "^0.13.1"
+    },
+    "files": [
+      "pkg/",
+      "src/"
+    ],
+    "keywords": [
+      "wasm",
+      "rust",
+      "mandelbrot",
+      "fractal",
+      "image",
+      "WebAssembly"
+    ]
+  }
+  
