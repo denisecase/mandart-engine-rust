@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MandArt Web</title>
+    <link rel="icon" href="./favicon_io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="./favicon_io/site.webmanifest">
+    <style>
+        /* Add some basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #controlsContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #canvasContainer {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>MandArt Web (WASM)</h1>
+    <p>Using Rust for a fast engine for MandArt.</p>    
+    <div id="fileListContainer"></div>
+
+    <div id="canvasContainer"></div>
+    
+    <script src="./index.js"></script>
+</body>
+</html>

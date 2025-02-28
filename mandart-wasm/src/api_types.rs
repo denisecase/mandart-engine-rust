@@ -1,11 +1,90 @@
 //! `api_types.rs` - WASM-compatible types.
 
 use wasm_bindgen::prelude::*;
-use mandart_core::get_inputs_from_picdef_string::ArtImageColorInputs;
+use mandart_core::get_inputs_from_picdef_string::{ArtImageColorInputs, ArtImageShapeInputs};
 use serde::{Deserialize, Serialize};
 use js_sys::{Array, Float64Array};
 
-// ... your existing JsArtImageShapeInputs ...
+/// Represents shape inputs in a WASM-compatible structure
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize)]
+pub struct JsArtImageShapeInputs {
+    pub image_width: u32,
+    pub image_height: u32,
+    pub iterations_max: f64,
+    pub scale: f64,
+    pub x_center: f64,
+    pub y_center: f64,
+    pub theta: f64,
+    pub r_sq_limit: f64,
+    pub mand_power_real: i32,
+    pub d_f_iter_min: f64,
+}
+
+#[wasm_bindgen]
+impl JsArtImageShapeInputs {
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        image_width: u32,
+        image_height: u32,
+        iterations_max: f64,
+        scale: f64,
+        x_center: f64,
+        y_center: f64,
+        theta: f64,
+        r_sq_limit: f64,
+        mand_power_real: i32,
+        d_f_iter_min: f64,
+    ) -> JsArtImageShapeInputs {
+        JsArtImageShapeInputs {
+            image_width,
+            image_height,
+            iterations_max,
+            scale,
+            x_center,
+            y_center,
+            theta,
+            r_sq_limit,
+            mand_power_real,
+            d_f_iter_min,
+        }
+    }
+}
+
+// Non-WASM impl for converting to core types
+impl JsArtImageShapeInputs {
+    /// Convert JS structure to Rust structure
+    pub fn to_rust(&self) -> ArtImageShapeInputs {
+        ArtImageShapeInputs {
+            image_width: self.image_width,
+            image_height: self.image_height,
+            iterations_max: self.iterations_max,
+            scale: self.scale,
+            x_center: self.x_center,
+            y_center: self.y_center,
+            theta: self.theta,
+            r_sq_limit: self.r_sq_limit,
+            mand_power_real: self.mand_power_real,
+            d_f_iter_min: self.d_f_iter_min,
+        }
+    }
+    
+    /// Create JS structure from Rust structure
+    pub fn from_rust(rust_inputs: &ArtImageShapeInputs) -> Self {
+        JsArtImageShapeInputs {
+            image_width: rust_inputs.image_width,
+            image_height: rust_inputs.image_height,
+            iterations_max: rust_inputs.iterations_max,
+            scale: rust_inputs.scale,
+            x_center: rust_inputs.x_center,
+            y_center: rust_inputs.y_center,
+            theta: rust_inputs.theta,
+            r_sq_limit: rust_inputs.r_sq_limit,
+            mand_power_real: rust_inputs.mand_power_real,
+            d_f_iter_min: rust_inputs.d_f_iter_min,
+        }
+    }
+}
 
 /// Represents color inputs in a WASM-compatible structure
 #[wasm_bindgen]
@@ -127,6 +206,20 @@ impl JsArtImageColorInputs {
             mand_color: self.mand_color,
             colors: self.colors.clone(),
             hues: self.hues.clone(),
+        }
+    }
+    
+    /// Create JS structure from Rust structure
+    pub fn from_rust(rust_inputs: &ArtImageColorInputs) -> Self {
+        JsArtImageColorInputs {
+            n_blocks: rust_inputs.n_blocks,
+            n_colors: rust_inputs.n_colors,
+            spacing_color_far: rust_inputs.spacing_color_far,
+            spacing_color_near: rust_inputs.spacing_color_near,
+            y_y_input: rust_inputs.y_y_input,
+            mand_color: rust_inputs.mand_color,
+            colors: rust_inputs.colors.clone(),
+            hues: rust_inputs.hues.clone(),
         }
     }
 }

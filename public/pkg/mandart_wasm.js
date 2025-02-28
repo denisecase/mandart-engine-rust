@@ -1,23 +1,6 @@
 let wasm;
 
-function addToExternrefTable0(obj) {
-    const idx = wasm.__externref_table_alloc();
-    wasm.__wbindgen_export_2.set(idx, obj);
-    return idx;
-}
-
-function handleError(f, args) {
-    try {
-        return f.apply(this, args);
-    } catch (e) {
-        const idx = addToExternrefTable0(e);
-        wasm.__wbindgen_exn_store(idx);
-    }
-}
-
-const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
-
-if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
+let WASM_VECTOR_LEN = 0;
 
 let cachedUint8ArrayMemory0 = null;
 
@@ -27,13 +10,6 @@ function getUint8ArrayMemory0() {
     }
     return cachedUint8ArrayMemory0;
 }
-
-function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
-}
-
-let WASM_VECTOR_LEN = 0;
 
 const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
 
@@ -98,56 +74,172 @@ function getDataViewMemory0() {
     return cachedDataViewMemory0;
 }
 
+function addToExternrefTable0(obj) {
+    const idx = wasm.__externref_table_alloc();
+    wasm.__wbindgen_export_4.set(idx, obj);
+    return idx;
+}
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        const idx = addToExternrefTable0(e);
+        wasm.__wbindgen_exn_store(idx);
+    }
+}
+
+const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
+
+if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
+
+function getStringFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
+}
+
+function isLikeNone(x) {
+    return x === undefined || x === null;
+}
+
+function debugString(val) {
+    // primitive types
+    const type = typeof val;
+    if (type == 'number' || type == 'boolean' || val == null) {
+        return  `${val}`;
+    }
+    if (type == 'string') {
+        return `"${val}"`;
+    }
+    if (type == 'symbol') {
+        const description = val.description;
+        if (description == null) {
+            return 'Symbol';
+        } else {
+            return `Symbol(${description})`;
+        }
+    }
+    if (type == 'function') {
+        const name = val.name;
+        if (typeof name == 'string' && name.length > 0) {
+            return `Function(${name})`;
+        } else {
+            return 'Function';
+        }
+    }
+    // objects
+    if (Array.isArray(val)) {
+        const length = val.length;
+        let debug = '[';
+        if (length > 0) {
+            debug += debugString(val[0]);
+        }
+        for(let i = 1; i < length; i++) {
+            debug += ', ' + debugString(val[i]);
+        }
+        debug += ']';
+        return debug;
+    }
+    // Test for built-in
+    const builtInMatches = /\[object ([^\]]+)\]/.exec(toString.call(val));
+    let className;
+    if (builtInMatches && builtInMatches.length > 1) {
+        className = builtInMatches[1];
+    } else {
+        // Failed to match the standard '[object ClassName]'
+        return toString.call(val);
+    }
+    if (className == 'Object') {
+        // we're a user defined class or Object
+        // JSON.stringify avoids problems with cycles, and is generally much
+        // easier than looping through ownProperties of `val`.
+        try {
+            return 'Object(' + JSON.stringify(val) + ')';
+        } catch (_) {
+            return 'Object';
+        }
+    }
+    // errors
+    if (val instanceof Error) {
+        return `${val.name}: ${val.message}\n${val.stack}`;
+    }
+    // TODO we could test for more things here, like `Set`s and `Map`s.
+    return className;
+}
+
 function takeFromExternrefTable0(idx) {
-    const value = wasm.__wbindgen_export_2.get(idx);
+    const value = wasm.__wbindgen_export_4.get(idx);
     wasm.__externref_table_dealloc(idx);
     return value;
 }
 /**
- * Generates a PNG file from a grid and returns it as a base64 string
- * @param {Float64Array} flat_grid
- * @param {number} width
- * @param {number} height
- * @param {string} picdef_json
- * @returns {string}
+ * **WASM API: Generate an image directly from shape and color inputs**
+ *
+ * This function optimizes performance by caching uncolored grids and
+ * reusing them when possible.
+ *
+ * # Arguments
+ * * `js_shape_inputs` - Shape inputs in JavaScript format
+ * * `js_color_inputs` - Color inputs in JavaScript format
+ *
+ * # Returns
+ * * An image data structure as a JsValue
+ * @param {any} js_shape_inputs
+ * @param {any} js_color_inputs
+ * @returns {any}
  */
-export function api_generate_png(flat_grid, width, height, picdef_json) {
-    let deferred3_0;
-    let deferred3_1;
-    try {
-        const ptr0 = passStringToWasm0(picdef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.api_generate_png(flat_grid, width, height, ptr0, len0);
-        var ptr2 = ret[0];
-        var len2 = ret[1];
-        if (ret[3]) {
-            ptr2 = 0; len2 = 0;
-            throw takeFromExternrefTable0(ret[2]);
-        }
-        deferred3_0 = ptr2;
-        deferred3_1 = len2;
-        return getStringFromWasm0(ptr2, len2);
-    } finally {
-        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
-    }
-}
-
-/**
- * **Colors a Mandelbrot iteration grid and returns RGBA data.**
- * @param {Float64Array} flat_grid
- * @param {number} width
- * @param {number} height
- * @param {string} picdef_json
- * @returns {Uint8Array}
- */
-export function api_get_colored_grid(flat_grid, width, height, picdef_json) {
-    const ptr0 = passStringToWasm0(picdef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.api_get_colored_grid(flat_grid, width, height, ptr0, len0);
+export function api_get_image_from_inputs(js_shape_inputs, js_color_inputs) {
+    const ret = wasm.api_get_image_from_inputs(js_shape_inputs, js_color_inputs);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
     return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * **WASM API: Clear the grid cache**
+ *
+ * This function allows clients to explicitly clear the grid cache,
+ * which might be useful for low-memory situations.
+ *
+ * # Returns
+ * * The number of cache entries that were cleared
+ * @returns {number}
+ */
+export function api_clear_grid_cache() {
+    const ret = wasm.api_clear_grid_cache();
+    return ret >>> 0;
+}
+
+/**
+ * **WASM API: Extract inputs from a PictureDefinition JSON string**
+ *
+ * This function parses a PictureDefinition JSON string and extracts
+ * shape and color inputs for Mandelbrot grid generation.
+ *
+ * @param {string} piddef_json - The JSON string representing a PictureDefinition
+ * @returns {[JsArtImageShapeInputs, JsArtImageColorInputs]} A tuple containing:
+ *   - Shape inputs for grid calculation
+ *   - Color inputs for grid coloring
+ *
+ * @example
+ * ```javascript
+ * const [shapeInputs, colorInputs] = mandart.api_get_inputs_from_piddef_string(jsonString);
+ * console.log(shapeInputs.image_width); // Access specific properties
+ * ```
+ *
+ * @remarks
+ * - Provides default values if certain JSON fields are missing
+ * - Extracts core parameters for Mandelbrot image generation
+ * - Converts Swift-generated PictureDefinition JSON to WebAssembly-compatible inputs
+ * @param {string} piddef_json
+ * @returns {any}
+ */
+export function api_get_inputs_from_piddef_string(piddef_json) {
+    const ptr0 = passStringToWasm0(piddef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.api_get_inputs_from_piddef_string(ptr0, len0);
+    return ret;
 }
 
 /**
@@ -181,6 +273,27 @@ export function api_get_version() {
     } finally {
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
+}
+
+/**
+ * **WASM API: Compute a Mandelbrot grid from shape inputs**
+ *
+ * Takes shape inputs from JavaScript and returns a 2D grid of iteration values.
+ *
+ * # Arguments
+ * * `js_inputs` - Shape inputs in JavaScript format
+ *
+ * # Returns
+ * * A 2D array of iteration values as a JsValue
+ * @param {any} js_inputs
+ * @returns {any}
+ */
+export function api_get_grid_from_shape_inputs(js_inputs) {
+    const ret = wasm.api_get_grid_from_shape_inputs(js_inputs);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
 }
 
 const JsArtImageColorInputsFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -303,6 +416,175 @@ export class JsArtImageColorInputs {
     }
 }
 
+const JsArtImageShapeInputsFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_jsartimageshapeinputs_free(ptr >>> 0, 1));
+/**
+ * Represents shape inputs in a WASM-compatible structure
+ */
+export class JsArtImageShapeInputs {
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        JsArtImageShapeInputsFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_jsartimageshapeinputs_free(ptr, 0);
+    }
+    /**
+     * @returns {number}
+     */
+    get image_width() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_image_width(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set image_width(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_image_width(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get image_height() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_image_height(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set image_height(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_image_height(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get iterations_max() {
+        const ret = wasm.__wbg_get_jsartimagecolorinputs_spacing_color_far(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set iterations_max(arg0) {
+        wasm.__wbg_set_jsartimagecolorinputs_spacing_color_far(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get scale() {
+        const ret = wasm.__wbg_get_jsartimagecolorinputs_spacing_color_near(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set scale(arg0) {
+        wasm.__wbg_set_jsartimagecolorinputs_spacing_color_near(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get x_center() {
+        const ret = wasm.__wbg_get_jsartimagecolorinputs_y_y_input(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set x_center(arg0) {
+        wasm.__wbg_set_jsartimagecolorinputs_y_y_input(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get y_center() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_y_center(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set y_center(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_y_center(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get theta() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_theta(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set theta(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_theta(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get r_sq_limit() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_r_sq_limit(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set r_sq_limit(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_r_sq_limit(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get mand_power_real() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_mand_power_real(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set mand_power_real(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_mand_power_real(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get d_f_iter_min() {
+        const ret = wasm.__wbg_get_jsartimageshapeinputs_d_f_iter_min(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set d_f_iter_min(arg0) {
+        wasm.__wbg_set_jsartimageshapeinputs_d_f_iter_min(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @param {number} image_width
+     * @param {number} image_height
+     * @param {number} iterations_max
+     * @param {number} scale
+     * @param {number} x_center
+     * @param {number} y_center
+     * @param {number} theta
+     * @param {number} r_sq_limit
+     * @param {number} mand_power_real
+     * @param {number} d_f_iter_min
+     */
+    constructor(image_width, image_height, iterations_max, scale, x_center, y_center, theta, r_sq_limit, mand_power_real, d_f_iter_min) {
+        const ret = wasm.jsartimageshapeinputs_new(image_width, image_height, iterations_max, scale, x_center, y_center, theta, r_sq_limit, mand_power_real, d_f_iter_min);
+        this.__wbg_ptr = ret >>> 0;
+        JsArtImageShapeInputsFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+}
+
 async function __wbg_load(module, imports) {
     if (typeof Response === 'function' && module instanceof Response) {
         if (typeof WebAssembly.instantiateStreaming === 'function') {
@@ -337,6 +619,13 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
+    imports.wbg.__wbg_String_8f0eb39a4a4c2f66 = function(arg0, arg1) {
+        const ret = String(arg1);
+        const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+    };
     imports.wbg.__wbg_buffer_609cc3eee51ed158 = function(arg0) {
         const ret = arg0.buffer;
         return ret;
@@ -378,8 +667,40 @@ function __wbg_get_imports() {
         const ret = arg0[arg1 >>> 0];
         return ret;
     };
+    imports.wbg.__wbg_getwithrefkey_1dc361bd10053bfe = function(arg0, arg1) {
+        const ret = arg0[arg1];
+        return ret;
+    };
     imports.wbg.__wbg_info_3daf2e093e091b66 = function(arg0) {
         console.info(arg0);
+    };
+    imports.wbg.__wbg_instanceof_ArrayBuffer_e14585432e3737fc = function(arg0) {
+        let result;
+        try {
+            result = arg0 instanceof ArrayBuffer;
+        } catch (_) {
+            result = false;
+        }
+        const ret = result;
+        return ret;
+    };
+    imports.wbg.__wbg_instanceof_Uint8Array_17156bcf118086a9 = function(arg0) {
+        let result;
+        try {
+            result = arg0 instanceof Uint8Array;
+        } catch (_) {
+            result = false;
+        }
+        const ret = result;
+        return ret;
+    };
+    imports.wbg.__wbg_isArray_a1eab7e0d067391b = function(arg0) {
+        const ret = Array.isArray(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_isSafeInteger_343e2beeeece1bb0 = function(arg0) {
+        const ret = Number.isSafeInteger(arg0);
+        return ret;
     };
     imports.wbg.__wbg_iterator_9a24c88df860dc65 = function() {
         const ret = Symbol.iterator;
@@ -400,28 +721,32 @@ function __wbg_get_imports() {
     imports.wbg.__wbg_log_c222819a41e063d3 = function(arg0) {
         console.log(arg0);
     };
+    imports.wbg.__wbg_new_405e22f390576ce2 = function() {
+        const ret = new Object();
+        return ret;
+    };
     imports.wbg.__wbg_new_78c8a92080461d08 = function(arg0) {
         const ret = new Float64Array(arg0);
+        return ret;
+    };
+    imports.wbg.__wbg_new_78feb108b6472713 = function() {
+        const ret = new Array();
         return ret;
     };
     imports.wbg.__wbg_new_8a6f238a6ece86ea = function() {
         const ret = new Error();
         return ret;
     };
+    imports.wbg.__wbg_new_a12002a7f91c75be = function(arg0) {
+        const ret = new Uint8Array(arg0);
+        return ret;
+    };
     imports.wbg.__wbg_newwithbyteoffsetandlength_93c8e0c1a479fa1a = function(arg0, arg1, arg2) {
         const ret = new Float64Array(arg0, arg1 >>> 0, arg2 >>> 0);
         return ret;
     };
-    imports.wbg.__wbg_newwithbyteoffsetandlength_d97e637ebe145a9a = function(arg0, arg1, arg2) {
-        const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
-        return ret;
-    };
     imports.wbg.__wbg_newwithlength_5ebc38e611488614 = function(arg0) {
         const ret = new Float64Array(arg0 >>> 0);
-        return ret;
-    };
-    imports.wbg.__wbg_newwithlength_a381634e90c276d4 = function(arg0) {
-        const ret = new Uint8Array(arg0 >>> 0);
         return ret;
     };
     imports.wbg.__wbg_next_25feadfc0913fea9 = function(arg0) {
@@ -434,6 +759,12 @@ function __wbg_get_imports() {
     }, arguments) };
     imports.wbg.__wbg_set_29b6f95e6adb667e = function(arg0, arg1, arg2) {
         arg0.set(arg1, arg2 >>> 0);
+    };
+    imports.wbg.__wbg_set_37837023f3d740e8 = function(arg0, arg1, arg2) {
+        arg0[arg1 >>> 0] = arg2;
+    };
+    imports.wbg.__wbg_set_3f1d0b984ed272ed = function(arg0, arg1, arg2) {
+        arg0[arg1] = arg2;
     };
     imports.wbg.__wbg_set_65595bdd868b3009 = function(arg0, arg1, arg2) {
         arg0.set(arg1, arg2 >>> 0);
@@ -456,8 +787,42 @@ function __wbg_get_imports() {
     imports.wbg.__wbg_warn_4ca3906c248c47c4 = function(arg0) {
         console.warn(arg0);
     };
+    imports.wbg.__wbindgen_as_number = function(arg0) {
+        const ret = +arg0;
+        return ret;
+    };
+    imports.wbg.__wbindgen_bigint_from_u64 = function(arg0) {
+        const ret = BigInt.asUintN(64, arg0);
+        return ret;
+    };
+    imports.wbg.__wbindgen_bigint_get_as_i64 = function(arg0, arg1) {
+        const v = arg1;
+        const ret = typeof(v) === 'bigint' ? v : undefined;
+        getDataViewMemory0().setBigInt64(arg0 + 8 * 1, isLikeNone(ret) ? BigInt(0) : ret, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
+    };
+    imports.wbg.__wbindgen_boolean_get = function(arg0) {
+        const v = arg0;
+        const ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
+        return ret;
+    };
+    imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {
+        const ret = debugString(arg1);
+        const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+    };
+    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
+        const ret = new Error(getStringFromWasm0(arg0, arg1));
+        return ret;
+    };
+    imports.wbg.__wbindgen_in = function(arg0, arg1) {
+        const ret = arg0 in arg1;
+        return ret;
+    };
     imports.wbg.__wbindgen_init_externref_table = function() {
-        const table = wasm.__wbindgen_export_2;
+        const table = wasm.__wbindgen_export_4;
         const offset = table.grow(4);
         table.set(0, undefined);
         table.set(offset + 0, undefined);
@@ -465,6 +830,10 @@ function __wbg_get_imports() {
         table.set(offset + 2, true);
         table.set(offset + 3, false);
         ;
+    };
+    imports.wbg.__wbindgen_is_bigint = function(arg0) {
+        const ret = typeof(arg0) === 'bigint';
+        return ret;
     };
     imports.wbg.__wbindgen_is_function = function(arg0) {
         const ret = typeof(arg0) === 'function';
@@ -475,9 +844,39 @@ function __wbg_get_imports() {
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
     };
+    imports.wbg.__wbindgen_is_undefined = function(arg0) {
+        const ret = arg0 === undefined;
+        return ret;
+    };
+    imports.wbg.__wbindgen_jsval_eq = function(arg0, arg1) {
+        const ret = arg0 === arg1;
+        return ret;
+    };
+    imports.wbg.__wbindgen_jsval_loose_eq = function(arg0, arg1) {
+        const ret = arg0 == arg1;
+        return ret;
+    };
     imports.wbg.__wbindgen_memory = function() {
         const ret = wasm.memory;
         return ret;
+    };
+    imports.wbg.__wbindgen_number_get = function(arg0, arg1) {
+        const obj = arg1;
+        const ret = typeof(obj) === 'number' ? obj : undefined;
+        getDataViewMemory0().setFloat64(arg0 + 8 * 1, isLikeNone(ret) ? 0 : ret, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, !isLikeNone(ret), true);
+    };
+    imports.wbg.__wbindgen_number_new = function(arg0) {
+        const ret = arg0;
+        return ret;
+    };
+    imports.wbg.__wbindgen_string_get = function(arg0, arg1) {
+        const obj = arg1;
+        const ret = typeof(obj) === 'string' ? obj : undefined;
+        var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len1 = WASM_VECTOR_LEN;
+        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
     };
     imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
         const ret = getStringFromWasm0(arg0, arg1);
