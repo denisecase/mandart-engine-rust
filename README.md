@@ -1,5 +1,9 @@
 # mandart-engine-rust
 
+- [MandArt](https://github.com/denisecase/MandArt) - A SwiftUI App
+- [MandArt Web](https://github.com/denisecase/mandart-web) - a web app front end (under construction)
+- [MandArt Discoveries](https://github.com/denisecase/MandArt-Discoveries) - view discovered MandArt
+
 ## Install Rustup
 
 ```zsh
