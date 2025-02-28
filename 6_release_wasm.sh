@@ -21,9 +21,5 @@ wasm-pack build --target web --release --out-dir ../public/pkg --features wasm |
 }
 cd ..
 
-echo "📂 Copying WASM output..."
-ls -lh public/pkg/*.wasm
-cp public/pkg/*.wasm public/pkg/mandart-engine-rust.wasm.txt
-
 echo "🎉 WASM release is ready!"
 exit 0

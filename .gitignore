@@ -27,3 +27,6 @@ Cargo.lock
 
 # bitmaps 
 *.bmp
+
+# mac
+.DS_Store
