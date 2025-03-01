@@ -14,7 +14,7 @@ mod api_types;
 // Re-export the public API functions
 pub use api_get_grid_from_shape_inputs::api_get_grid_from_shape_inputs;
 pub use api_get_image_from_inputs::api_get_image_from_inputs;
-pub use api_get_inputs_from_picdef_string::api_get_inputs_from_piddef_string;
+pub use api_get_inputs_from_picdef_string::api_get_inputs_from_picdef_string;
 pub use api_load_or_compute_default_grid::api_load_or_compute_default_grid;
 pub use api_types::{JsArtImageColorInputs, JsArtImageShapeInputs};
 

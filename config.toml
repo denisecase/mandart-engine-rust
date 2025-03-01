@@ -1,5 +1,5 @@
-# Folder containing .mandart files
-input_folder = "input"
+# Folder containing .mandart files - change to input to run all
+input_folder = "input_small"
 
 # Folder containing reference outputs from MandArt
 check_folder = "input_swift"

@@ -235,10 +235,10 @@ export function api_clear_grid_cache() {
  * @param {string} piddef_json
  * @returns {any}
  */
-export function api_get_inputs_from_piddef_string(piddef_json) {
+export function api_get_inputs_from_picdef_string(piddef_json) {
     const ptr0 = passStringToWasm0(piddef_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.api_get_inputs_from_piddef_string(ptr0, len0);
+    const ret = wasm.api_get_inputs_from_picdef_string(ptr0, len0);
     return ret;
 }
 

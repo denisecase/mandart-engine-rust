@@ -27,7 +27,7 @@ use crate::api_types::{JsArtImageShapeInputs, JsArtImageColorInputs};
 /// - Extracts core parameters for Mandelbrot image generation
 /// - Converts Swift-generated PictureDefinition JSON to WebAssembly-compatible inputs
 #[wasm_bindgen]
-pub fn api_get_inputs_from_piddef_string(piddef_json: String) -> JsValue {
+pub fn api_get_inputs_from_picdef_string(piddef_json: String) -> JsValue {
     info!("🔍 WASM: Parsing PictureDefinition from JSON string");
     
     // Parse the JSON string 

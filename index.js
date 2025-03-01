@@ -51,7 +51,7 @@ async function testMandartFileProcessing(wasmModule) {
 
       // Use the WASM function to extract inputs
       const [shapeInputs, colorInputs] =
-        wasmModule.api_get_inputs_from_piddef_string(JSON.stringify(content));
+        wasmModule.api_get_inputs_from_picdef_string(JSON.stringify(content));
 
       console.log(`Processing ${file}:`, { shapeInputs, colorInputs });
 

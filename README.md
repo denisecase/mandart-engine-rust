@@ -46,6 +46,8 @@ This document defines a cross-language interop structure for Swift, Rust, and Ja
 Your colors are stored as f64 values ([f64; 3]).
 Many PNG libraries expect u8 values ([u8; 3]), so we must scale the colors correctly.
 
+## 
+
 ## Test Page 
 
 See <https://denisecase.github.io/mandart-engine-rust/> for the wasm test page.
