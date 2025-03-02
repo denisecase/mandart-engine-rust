@@ -1,4 +1,4 @@
-//! `api_get_inputs_from_piddef_string.rs` - Extracts inputs from PicDef JSON
+//! `api_get_inputs_from_picdef_string.rs` - Extracts inputs from PicDef JSON
 
 use wasm_bindgen::prelude::*;
 use serde_json::Value;
@@ -11,14 +11,14 @@ use crate::api_types::{JsArtImageShapeInputs, JsArtImageColorInputs};
 /// This function parses a PictureDefinition JSON string and extracts 
 /// shape and color inputs for Mandelbrot grid generation.
 ///
-/// @param {string} piddef_json - The JSON string representing a PictureDefinition
+/// @param {string} picdef_json - The JSON string representing a PictureDefinition
 /// @returns {[JsArtImageShapeInputs, JsArtImageColorInputs]} A tuple containing:
 ///   - Shape inputs for grid calculation
 ///   - Color inputs for grid coloring
 ///
 /// @example
 /// ```javascript
-/// const [shapeInputs, colorInputs] = mandart.api_get_inputs_from_piddef_string(jsonString);
+/// const [shapeInputs, colorInputs] = mandart.api_get_inputs_from_picdef_string(jsonString);
 /// console.log(shapeInputs.image_width); // Access specific properties
 /// ```
 ///
@@ -27,11 +27,11 @@ use crate::api_types::{JsArtImageShapeInputs, JsArtImageColorInputs};
 /// - Extracts core parameters for Mandelbrot image generation
 /// - Converts Swift-generated PictureDefinition JSON to WebAssembly-compatible inputs
 #[wasm_bindgen]
-pub fn api_get_inputs_from_picdef_string(piddef_json: String) -> JsValue {
+pub fn api_get_inputs_from_picdef_string(picdef_json: String) -> JsValue {
     info!("🔍 WASM: Parsing PictureDefinition from JSON string");
     
     // Parse the JSON string 
-    let parsed: Value = serde_json::from_str(&piddef_json).unwrap();
+    let parsed: Value = serde_json::from_str(&picdef_json).unwrap();
 
     // Create shape inputs with sensible defaults
     let shape_inputs = JsArtImageShapeInputs::new(

@@ -1,10 +1,10 @@
-//! `get_grid_from_shape_inputs.rs` - Computes the Mandelbrot grid from shape inputs.
+//! get_grid_from_shape_inputs.rs - Computes the Mandelbrot grid from shape inputs.
 
 use crate::get_inputs_from_picdef_string::ArtImageShapeInputs;
 
 /// **Computes the Mandelbrot grid from shape inputs.**
-/// - **Input**: `&ArtImageShapeInputs`
-/// - **Output**: `Vec<Vec<f64>>` (2D vector of iteration values)
+/// - **Input**: &ArtImageShapeInputs
+/// - **Output**: Vec<Vec<f64>> (2D vector of iteration values)
 pub fn get_grid_from_shape_inputs(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec<f64>> {
     println!("🔢 Calculating Mandelbrot grid...");
 
@@ -18,7 +18,7 @@ pub fn get_grid_from_shape_inputs(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec
     let scale = shape_inputs.scale;
     let x_center = shape_inputs.x_center;
     let y_center = shape_inputs.y_center;
-    let theta_r = std::f64::consts::PI * shape_inputs.theta / 180.0;
+    let theta_r = std::f64::consts::PI * (-shape_inputs.theta) / 180.0;
 
     let r_sq_limit = shape_inputs.r_sq_limit;
     let r_sq_max = (r_sq_limit.sqrt().powi(2) + 2.0).powi(2);
@@ -87,8 +87,7 @@ pub fn get_grid_from_shape_inputs(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec
 /// **Computes complex power for Mandelbrot iterations.**
 fn complex_pow(base_x: f64, base_y: f64, power_real: i32) -> (f64, f64) {
     if power_real == 2 {
-        let x_temp = base_x * base_x - base_y * base_y;
-        let new_y = 2.0 * base_x * base_y;
+        let x_temp = base_x * base_x - base_y * base_y;        let new_y = 2.0 * base_x * base_y;
         (x_temp, new_y)
     } else if power_real == 3 {
         let x_squared = base_x * base_x;
