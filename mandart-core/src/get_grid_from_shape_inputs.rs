@@ -18,7 +18,15 @@ pub fn get_grid_from_shape_inputs(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec
     let scale = shape_inputs.scale;
     let x_center = shape_inputs.x_center;
     let y_center = shape_inputs.y_center;
-    let theta_r = std::f64::consts::PI * (-shape_inputs.theta) / 180.0;
+    let theta_r = std::f64::consts::PI * (-shape_inputs.theta) / 180.0; // needle points up
+
+    // See ROTATION.md for details on the rotation formula - needle SHOULD point left
+    //let theta_rust = -theta_r + std::f64::consts::PI / 2.0; // needle points right
+    //let theta_rust = -theta_r + std::f64::consts::FRAC_PI_2; // needle points right
+    //let theta_rust = -theta_r; // needle points up
+    let theta_rust = -theta_r + std::f64::consts::FRAC_PI_2 + std::f64::consts::PI;
+
+
 
     let r_sq_limit = shape_inputs.r_sq_limit;
     let r_sq_max = (r_sq_limit.sqrt().powi(2) + 2.0).powi(2);
@@ -30,8 +38,11 @@ pub fn get_grid_from_shape_inputs(shape_inputs: &ArtImageShapeInputs) -> Vec<Vec
             let d_x = (u as f64 - (image_width / 2) as f64) / scale;
             let d_y = (v as f64 - (image_height / 2) as f64) / scale;
 
-            let x0 = x_center + d_x * theta_r.cos() - d_y * theta_r.sin();
-            let y0 = y_center + d_x * theta_r.sin() + d_y * theta_r.cos();
+            // let x0 = x_center + d_x * theta_r.cos() - d_y * theta_r.sin();
+            // let y0 = y_center + d_x * theta_r.sin() + d_y * theta_r.cos();
+
+            let x0 = x_center + d_x * theta_rust.cos() - d_y * theta_rust.sin();
+            let y0 = y_center + d_x * theta_rust.sin() + d_y * theta_rust.cos();
 
             let mut xx = x0;
             let mut yy = y0;
